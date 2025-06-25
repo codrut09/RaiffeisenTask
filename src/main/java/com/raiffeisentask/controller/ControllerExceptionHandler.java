@@ -14,13 +14,13 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(OrderNotFoundException.class)
     public ResponseEntity<String> handleOrderNotFound(OrderNotFoundException ex) {
-        log.error("Order not found: {}", ex.getMessage());
+        log.error(ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
     @ExceptionHandler(ProductNotFoundException.class)
     public ResponseEntity<String> handleOrderNotFound(ProductNotFoundException ex) {
-        log.error("Product not found: {}", ex.getMessage());
+        log.error(ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 

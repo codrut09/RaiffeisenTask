@@ -15,6 +15,7 @@ public class OrderDto {
     private Long id;
     private String orderNumber;
     private Integer quantity;
-    private LocalDateTime orderDate;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private Long productId;
 }

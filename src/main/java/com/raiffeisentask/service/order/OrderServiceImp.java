@@ -2,20 +2,26 @@ package com.raiffeisentask.service.order;
 
 import com.raiffeisentask.dto.OrderDto;
 import com.raiffeisentask.exception.OrderNotFoundException;
+import com.raiffeisentask.exception.ProductNotFoundException;
 import com.raiffeisentask.model.Order;
 import com.raiffeisentask.model.Product;
 import com.raiffeisentask.repository.OrderRepository;
 import com.raiffeisentask.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@Slf4j
 public class OrderServiceImp implements OrderService {
 
     private final OrderRepository orderRepository;
@@ -24,7 +30,7 @@ public class OrderServiceImp implements OrderService {
     @Override
     public OrderDto findById(Long id) {
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new OrderNotFoundException("Order not found with id: " + id));
+                .orElseThrow(() -> new OrderNotFoundException("Order " + id + " not found"));
         return toDto(order);
     }
 
@@ -33,17 +39,66 @@ public class OrderServiceImp implements OrderService {
         List<Order> orderEntities = orderList.stream()
                 .map(this::toEntity)
                 .toList();
-        return orderRepository.saveAll(orderEntities)
+
+        log.info("Insert orders: " + orderEntities.size());
+        List<OrderDto> orderDtos = orderRepository.saveAll(orderEntities)
                 .stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
+        log.info("Orders inserted successfully: " + orderDtos.size());
+        return orderDtos;
+    }
+
+    @Override
+    public void deleteData(Long id) {
+        if (!orderRepository.existsById(id)) {
+            throw new OrderNotFoundException("Order " + id + " not found");
+        }
+        orderRepository.deleteById(id);
+        log.info("Order " + id + " deleted successfully");
+    }
+
+    @Override
+    public List<OrderDto> updateData(List<OrderDto> orderList) {
+        List<Order> updatedOrders = orderList.stream()
+                .map(orderDto -> orderRepository.findById(orderDto.getId())
+                        .map(existingOrder -> {
+                            existingOrder.setQuantity(orderDto.getQuantity());
+                            if (orderDto.getProductId() != null) {
+                                Product product = productRepository.findById(orderDto.getProductId())
+                                        .orElseThrow(() -> new ProductNotFoundException("Product id: " + orderDto.getProductId() + " not found for order id: " + orderDto.getId()));
+                                existingOrder.setProduct(product);
+                            }
+                            return existingOrder;
+                        })
+                        .orElseGet(() -> {
+                            System.out.println("Order id: " + orderDto.getId() + " not found" );
+                            return null;
+                        }))
+                .filter(Objects::nonNull)
+                .toList();
+
+        log.info("Updated orders: " + updatedOrders.size());
+        List<OrderDto> orderDtos = orderRepository.saveAll(updatedOrders)
+                .stream()
+                .map(this::toDto)
+                .toList();
+        log.info("Orders updated successfully: " + orderDtos.size());
+        return orderDtos;
+    }
+
+    @Override
+    public Page<OrderDto> getAllOrders(Pageable pageable) {
+        Page<Order> orders = orderRepository.findAll(pageable);
+        return orders.map(this::toDto);
     }
 
     private OrderDto toDto(Order order) {
         return OrderDto.builder()
                 .id(order.getId())
                 .orderNumber(order.getOrderNumber())
-                .orderDate(order.getCreatedAt())
+                .createdAt(order.getCreatedAt())
+                .updatedAt(order.getUpdatedAt())
                 .quantity(order.getQuantity())
                 .productId(order.getProduct() != null ? order.getProduct().getId() : null)
                 .build();
@@ -59,33 +114,4 @@ public class OrderServiceImp implements OrderService {
                 .build();
     }
 
-//    @Override
-//    public Page<OrderDto> getData(Map<String, Object> filters, Pageable pageable) {
-//        return orderRepository.findAll(pageable).map(order -> OrderDto.builder()
-//                .id(order.getId())
-//                .quantity(order.getQuantity())
-//                .orderDate(order.getOrderDate())
-//                .productId(order.getProduct() != null ? order.getProduct().getId() : null)
-//                .build())
-//    }
-//    @Override
-//    public List<Long> updateData(List<OrderDto> orderList) {
-//         List<Order> orderEntities = orderList.stream()
-//                .map(orderDto -> new Order(
-//                        orderDto.getId(),
-//                        orderDto.getQuantity(),
-//                        orderDto.getOrderDate(),
-//                        null // Assuming product will be set later
-//                )).toList();
-//        return orderRepository.saveAll(orderEntities).stream().map(Order::getId).collect(Collectors.toList());
-//    }
-//
-//    @Override
-//    public boolean deleteData(Long id) {
-//        if (orderRepository.existsById(id)) {
-//            orderRepository.deleteById(id);
-//            return true;
-//        }
-//        return false;
-//    }
 }
