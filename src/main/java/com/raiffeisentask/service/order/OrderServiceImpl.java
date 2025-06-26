@@ -17,12 +17,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @Slf4j
-public class OrderServiceImp implements OrderService {
+public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
@@ -44,7 +43,7 @@ public class OrderServiceImp implements OrderService {
         List<OrderDto> orderDtos = orderRepository.saveAll(orderEntities)
                 .stream()
                 .map(this::toDto)
-                .collect(Collectors.toList());
+                .toList();
         log.info("Orders inserted successfully: " + orderDtos.size());
         return orderDtos;
     }
@@ -72,7 +71,7 @@ public class OrderServiceImp implements OrderService {
                             return existingOrder;
                         })
                         .orElseGet(() -> {
-                            System.out.println("Order id: " + orderDto.getId() + " not found" );
+                            log.info("Order id: {} not found", orderDto.getId());
                             return null;
                         }))
                 .filter(Objects::nonNull)
