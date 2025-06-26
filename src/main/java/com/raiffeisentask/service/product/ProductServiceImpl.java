@@ -5,14 +5,15 @@ import com.raiffeisentask.exception.ProductNotFoundException;
 import com.raiffeisentask.model.Product;
 import com.raiffeisentask.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@Slf4j
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
@@ -29,10 +30,43 @@ public class ProductServiceImpl implements ProductService {
         List<Product> productEntities = products.stream()
                 .map(this::toEntity)
                 .toList();
-        return productRepository.saveAll(productEntities)
+        log.info("Inserted {} products", productEntities.size());
+        List<ProductDto> productDtos = productRepository.saveAll(productEntities)
                 .stream()
                 .map(this::toDto)
                 .toList();
+        log.info("Products inserted successfully: {}", productEntities.size());
+        return productDtos;
+    }
+
+    @Override
+    public List<ProductDto> updateData(List<ProductDto> products) {
+        List<Product> updatedProducts = products.stream()
+                .map(dto -> {
+                    Product existingProduct = productRepository.findById(dto.getId())
+                            .orElseThrow(() -> new ProductNotFoundException("Product id: " + dto.getId() + " not found"));
+                    existingProduct.setName(dto.getName());
+                    existingProduct.setPrice(dto.getPrice());
+                    existingProduct.setStock(dto.getStock());
+                    return existingProduct;
+                })
+                .toList();
+        log.info("Updated products: {}", updatedProducts.size());
+        List<ProductDto> productDtos = productRepository.saveAll(updatedProducts)
+                .stream()
+                .map(this::toDto)
+                .toList();
+        log.info("Products updated successfully: {}", updatedProducts.size());
+        return productDtos;
+    }
+
+    @Override
+    public void deleteData(Long id) {
+        if (!productRepository.existsById(id)) {
+            throw new ProductNotFoundException("Product with id: " + id + " not found");
+        }
+        productRepository.deleteById(id);
+        log.info("Product {} deleted successfully", id);
     }
 
     private ProductDto toDto(Product product) {
@@ -53,23 +87,4 @@ public class ProductServiceImpl implements ProductService {
                 .build();
     }
 
-//    @Override
-//    public Page<Product> getData(Map<String, Object> filters, Pageable pageable) {
-//        return productRepository.findAll(pageable);
-//    }
-//
-//    @Override
-//    public List<Product> updateData(List<Product> products) {
-//        return productRepository.saveAll(products);
-//    }
-
-//    @Override
-//    public boolean deleteData(Long id) {
-//        if (productRepository.existsById(id)) {
-//            productRepository.deleteById(id);
-//            return true;
-//        }
-//        return false;
-//    }
-//
 }

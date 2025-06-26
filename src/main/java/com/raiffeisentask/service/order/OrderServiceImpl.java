@@ -39,12 +39,12 @@ public class OrderServiceImpl implements OrderService {
                 .map(this::toEntity)
                 .toList();
 
-        log.info("Insert orders: " + orderEntities.size());
+        log.info("Insert orders: {}", orderEntities.size());
         List<OrderDto> orderDtos = orderRepository.saveAll(orderEntities)
                 .stream()
                 .map(this::toDto)
                 .toList();
-        log.info("Orders inserted successfully: " + orderDtos.size());
+        log.info("Orders inserted successfully: {}", orderDtos.size());
         return orderDtos;
     }
 
@@ -54,7 +54,7 @@ public class OrderServiceImpl implements OrderService {
             throw new OrderNotFoundException("Order " + id + " not found");
         }
         orderRepository.deleteById(id);
-        log.info("Order " + id + " deleted successfully");
+        log.info("Order {} deleted successfully", id);
     }
 
     @Override
@@ -77,12 +77,12 @@ public class OrderServiceImpl implements OrderService {
                 .filter(Objects::nonNull)
                 .toList();
 
-        log.info("Updated orders: " + updatedOrders.size());
+        log.info("Updated orders: {}", updatedOrders.size());
         List<OrderDto> orderDtos = orderRepository.saveAll(updatedOrders)
                 .stream()
                 .map(this::toDto)
                 .toList();
-        log.info("Orders updated successfully: " + orderDtos.size());
+        log.info("Orders updated successfully: {}", orderDtos.size());
         return orderDtos;
     }
 
