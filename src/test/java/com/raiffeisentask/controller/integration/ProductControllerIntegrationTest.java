@@ -18,8 +18,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.math.BigDecimal;
 import java.util.List;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -77,6 +82,7 @@ class ProductControllerIntegrationTest {
         ProductDto newProduct = ProductDto.builder()
                 .name("New Product")
                 .price(BigDecimal.valueOf(20))
+                .stock(100)
                 .build();
 
         //execute&verify
@@ -96,6 +102,7 @@ class ProductControllerIntegrationTest {
                 .id(testProduct.getId())
                 .name("Updated Product")
                 .price(BigDecimal.valueOf(30))
+                .stock(100)
                 .build();
 
         //execute&verify
@@ -147,9 +154,25 @@ class ProductControllerIntegrationTest {
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
         //execute&verify
-        Assertions.assertThrows(LazyInitializationException.class, () -> {
-            product.getOrders().size();
-        });
+        Assertions.assertThrows(LazyInitializationException.class, () -> product.getOrders().size());
     }
+
+    @Test
+    void insertData_shouldReturnValidationException() throws Exception {
+        //setup
+        ProductDto newProduct = ProductDto.builder()
+                .name("New Product")
+                .price(BigDecimal.valueOf(20))
+                .build();
+
+        //execute&verify
+        mockMvc.perform(post("/api/products")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(List.of(newProduct))))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.stock").value("Stock is required"));
+    }
+
 
 }

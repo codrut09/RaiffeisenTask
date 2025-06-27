@@ -3,6 +3,7 @@ package com.raiffeisentask.controller;
 import com.raiffeisentask.dto.ProductDto;
 import com.raiffeisentask.dto.ProductWithOrdersDto;
 import com.raiffeisentask.service.product.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,12 +33,12 @@ public class ProductController {
     }
 
     @PostMapping
-    public List<ProductDto> createProducts(@RequestBody List<ProductDto> products) {
+    public List<ProductDto> createProducts(@RequestBody @Valid List<ProductDto> products) {
         return productService.insertData(products);
     }
 
     @PutMapping
-    public List<ProductDto> updateOrders(@RequestBody List<ProductDto> products) {
+    public List<ProductDto> updateOrders(@RequestBody @Valid List<ProductDto> products) {
         return productService.updateData(products);
     }
 

@@ -37,6 +37,7 @@ public class Product {
 
     private Integer stock;
 
+    @Builder.Default
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<Order> orders = new ArrayList<>();
 }

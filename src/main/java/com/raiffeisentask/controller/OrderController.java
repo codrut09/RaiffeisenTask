@@ -4,6 +4,7 @@ import com.raiffeisentask.dto.OrderDto;
 import com.raiffeisentask.model.Order;
 import com.raiffeisentask.service.order.OrderService;
 import com.raiffeisentask.util.OrderSpecificationBuilder;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,12 +42,12 @@ public class OrderController {
     }
 
     @PostMapping
-    public List<OrderDto> createOrders(@RequestBody List<OrderDto> orders) {
+    public List<OrderDto> createOrders(@RequestBody @Valid List<OrderDto> orders) {
         return orderService.insertData(orders);
     }
 
     @PutMapping
-    public List<OrderDto> updateOrders(@RequestBody List<OrderDto> orders) {
+    public List<OrderDto> updateOrders(@RequestBody @Valid List<OrderDto> orders) {
         return orderService.updateData(orders);
     }
 

@@ -160,4 +160,17 @@ class OrderControllerIntegrationTest {
                 .andExpect(jsonPath("$.content").isArray())
                 .andExpect(jsonPath("$.content").isEmpty());
     }
+
+    @Test
+    void testCreateOrders_throwValidationException() throws Exception {
+        //setup
+        String orderJson = "[{\"quantity\": 0,\"productId\":" + testProduct.getId() + "}]";
+
+        //execute&verify
+        mockMvc.perform(post("/api/orders")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(orderJson)).andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.quantity").value("Quantity must be at least 1"));
+    }
 }
