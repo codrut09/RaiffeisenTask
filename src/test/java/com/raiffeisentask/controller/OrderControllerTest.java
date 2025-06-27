@@ -113,13 +113,13 @@ class OrderControllerTest {
         Page<OrderDto> mockPage = Page.empty();
 
         //mock
-        when(orderService.getAllOrders(any())).thenReturn(mockPage);
+        when(orderService.getAllOrders(any(), any())).thenReturn(mockPage);
 
         //execute
-        Page<OrderDto> response = orderController.getOrders(0, 10, "id", "asc");
+        Page<OrderDto> response = orderController.getOrders(0, 10, "id", "asc", null, null, null, null, null);
 
         //verify
         assertEquals(mockPage, response);
-        verify(orderService, times(1)).getAllOrders(any());
+        verify(orderService, times(1)).getAllOrders(any(), any());
     }
 }

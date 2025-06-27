@@ -1,8 +1,10 @@
 package com.raiffeisentask.service.order;
 
 import com.raiffeisentask.dto.OrderDto;
+import com.raiffeisentask.model.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 
@@ -16,5 +18,5 @@ public interface OrderService {
 
     void deleteData(Long id);
 
-    Page<OrderDto> getAllOrders(Pageable pageable);
+    Page<OrderDto> getAllOrders(Specification<Order> spec, Pageable pageable);
 }
