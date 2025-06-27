@@ -1,6 +1,7 @@
 package com.raiffeisentask.controller;
 
 import com.raiffeisentask.dto.ProductDto;
+import com.raiffeisentask.dto.ProductWithOrdersDto;
 import com.raiffeisentask.service.product.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,5 +45,10 @@ public class ProductController {
     public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
         productService.deleteData(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/orders")
+    public ResponseEntity<ProductWithOrdersDto> getProductWithOrders(@PathVariable Long id) {
+        return ResponseEntity.ok(productService.getProductWithOrders(id));
     }
 }

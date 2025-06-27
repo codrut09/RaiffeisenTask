@@ -7,6 +7,7 @@ import com.raiffeisentask.model.Order;
 import com.raiffeisentask.model.Product;
 import com.raiffeisentask.repository.OrderRepository;
 import com.raiffeisentask.repository.ProductRepository;
+import com.raiffeisentask.util.DtoMapperUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -31,19 +31,23 @@ public class OrderServiceImpl implements OrderService {
     public OrderDto findById(Long id) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new OrderNotFoundException("Order " + id + " not found"));
-        return toDto(order);
+        return DtoMapperUtils.orderToDto(order);
     }
 
     @Override
     public List<OrderDto> insertData(List<OrderDto> orderList) {
         List<Order> orderEntities = orderList.stream()
-                .map(this::toEntity)
+                .map(dto -> {
+                    Product product = productRepository.findById(dto.getProductId())
+                            .orElseThrow(() -> new RuntimeException("Product not found: " + dto.getProductId()));
+                    return DtoMapperUtils.orderToEntity(dto, product);
+                })
                 .toList();
 
         log.info("Insert orders: {}", orderEntities.size());
         List<OrderDto> orderDtos = orderRepository.saveAll(orderEntities)
                 .stream()
-                .map(this::toDto)
+                .map(DtoMapperUtils::orderToDto)
                 .toList();
         log.info("Orders inserted successfully: {}", orderDtos.size());
         return orderDtos;
@@ -81,7 +85,7 @@ public class OrderServiceImpl implements OrderService {
         log.info("Updated orders: {}", updatedOrders.size());
         List<OrderDto> orderDtos = orderRepository.saveAll(updatedOrders)
                 .stream()
-                .map(this::toDto)
+                .map(DtoMapperUtils::orderToDto)
                 .toList();
         log.info("Orders updated successfully: {}", orderDtos.size());
         return orderDtos;
@@ -90,28 +94,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Page<OrderDto> getAllOrders(Specification<Order> spec, Pageable pageable) {
         Page<Order> orders = orderRepository.findAll(spec, pageable);
-        return orders.map(this::toDto);
-    }
-
-    private OrderDto toDto(Order order) {
-        return OrderDto.builder()
-                .id(order.getId())
-                .orderNumber(order.getOrderNumber())
-                .createdAt(order.getCreatedAt())
-                .updatedAt(order.getUpdatedAt())
-                .quantity(order.getQuantity())
-                .productId(order.getProduct() != null ? order.getProduct().getId() : null)
-                .build();
-    }
-
-    private Order toEntity(OrderDto dto) {
-        Product product = productRepository.findById(dto.getProductId())
-                .orElseThrow(() -> new RuntimeException("Product not found"));
-        return Order.builder()
-                .orderNumber(UUID.randomUUID().toString())
-                .quantity(dto.getQuantity())
-                .product(product)
-                .build();
+        return orders.map(DtoMapperUtils::orderToDto);
     }
 
 }

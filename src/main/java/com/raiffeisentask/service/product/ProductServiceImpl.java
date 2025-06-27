@@ -1,9 +1,12 @@
 package com.raiffeisentask.service.product;
 
+import com.raiffeisentask.dto.OrderDto;
 import com.raiffeisentask.dto.ProductDto;
+import com.raiffeisentask.dto.ProductWithOrdersDto;
 import com.raiffeisentask.exception.ProductNotFoundException;
 import com.raiffeisentask.model.Product;
 import com.raiffeisentask.repository.ProductRepository;
+import com.raiffeisentask.util.DtoMapperUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,18 +25,18 @@ public class ProductServiceImpl implements ProductService {
     public ProductDto findById(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found with id: " + id));
-        return toDto(product);
+        return DtoMapperUtils.productToDto(product);
     }
 
     @Override
     public List<ProductDto> insertData(List<ProductDto> products) {
         List<Product> productEntities = products.stream()
-                .map(this::toEntity)
+                .map(DtoMapperUtils::productToEntity)
                 .toList();
         log.info("Inserted {} products", productEntities.size());
         List<ProductDto> productDtos = productRepository.saveAll(productEntities)
                 .stream()
-                .map(this::toDto)
+                .map(DtoMapperUtils::productToDto)
                 .toList();
         log.info("Products inserted successfully: {}", productEntities.size());
         return productDtos;
@@ -54,7 +57,7 @@ public class ProductServiceImpl implements ProductService {
         log.info("Updated products: {}", updatedProducts.size());
         List<ProductDto> productDtos = productRepository.saveAll(updatedProducts)
                 .stream()
-                .map(this::toDto)
+                .map(DtoMapperUtils::productToDto)
                 .toList();
         log.info("Products updated successfully: {}", updatedProducts.size());
         return productDtos;
@@ -69,21 +72,20 @@ public class ProductServiceImpl implements ProductService {
         log.info("Product {} deleted successfully", id);
     }
 
-    private ProductDto toDto(Product product) {
-        return ProductDto.builder()
-                .id(product.getId())
-                .name(product.getName())
-                .price(product.getPrice())
-                .stock(product.getStock())
-                .build();
-    }
-
-    private Product toEntity(ProductDto dto) {
-        return Product.builder()
-                .id(dto.getId())
-                .name(dto.getName())
-                .price(dto.getPrice())
-                .stock(dto.getStock())
+    @Override
+    public ProductWithOrdersDto getProductWithOrders(Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException("Product not found with id: " + productId));
+        ProductDto productDto = DtoMapperUtils.productToDto(product);
+        List<OrderDto> orderDtos = product.getOrders().stream()
+                .map(DtoMapperUtils::orderToDto)
+                .toList();
+        ProductWithOrdersDto dto = new ProductWithOrdersDto();
+        dto.setProduct(productDto);
+        dto.setOrders(orderDtos);
+        return ProductWithOrdersDto.builder()
+                .product(productDto)
+                .orders(orderDtos)
                 .build();
     }
 

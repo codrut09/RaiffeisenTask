@@ -24,8 +24,8 @@ public class RaiffeisenTaskApplication {
     CommandLineRunner loadMockData(ProductRepository productRepository, OrderRepository orderRepository) {
         return args -> {
             if (productRepository.count() == 0) {
-                Product laptop = new Product(null, "Laptop", new BigDecimal("3500.00"), 10);
-                Product phone = new Product(null, "Phone", new BigDecimal("2500.00"), 25);
+                Product laptop = new Product(null, "Laptop", new BigDecimal("3500.00"), 10, null);
+                Product phone = new Product(null, "Phone", new BigDecimal("2500.00"), 25, null);
                 productRepository.saveAll(List.of(laptop, phone));
 
                 Order order1 = Order.builder()

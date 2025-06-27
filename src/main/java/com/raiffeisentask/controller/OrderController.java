@@ -3,6 +3,7 @@ package com.raiffeisentask.controller;
 import com.raiffeisentask.dto.OrderDto;
 import com.raiffeisentask.model.Order;
 import com.raiffeisentask.service.order.OrderService;
+import com.raiffeisentask.util.OrderSpecificationBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,32 +71,9 @@ public class OrderController {
                 : Sort.by(sortBy).ascending();
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Specification<Order> spec = (root, query, cb) -> cb.conjunction();
-
-        if (orderNumber != null) {
-            spec = spec.and((root, query, cb) ->
-                    cb.like(cb.lower(root.get("orderNumber")), "%" + orderNumber.toLowerCase() + "%"));
-        }
-
-        if (productId != null) {
-            spec = spec.and((root, query, cb) ->
-                    cb.equal(root.get("product").get("id"), productId));
-        }
-
-        if (quantityMin != null) {
-            spec = spec.and((root, query, cb) ->
-                    cb.greaterThanOrEqualTo(root.get("quantity"), quantityMin));
-        }
-
-        if (quantityMax != null) {
-            spec = spec.and((root, query, cb) ->
-                    cb.lessThanOrEqualTo(root.get("quantity"), quantityMax));
-        }
-
-        if (createdAfter != null) {
-            spec = spec.and((root, query, cb) ->
-                    cb.greaterThanOrEqualTo(root.get("createdAt"), createdAfter));
-        }
+        Specification<Order> spec = OrderSpecificationBuilder.build(
+                orderNumber, productId, quantityMin, quantityMax, createdAfter
+        );
 
         return orderService.getAllOrders(spec, pageable);
     }
