@@ -1,5 +1,6 @@
 package com.raiffeisentask.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -17,6 +18,7 @@ import java.math.BigDecimal;
 public class ProductDto {
     private Long id;
 
+    @Schema(description = "Name of the product", example = "Wireless Headphones")
     @Size(max = 50, message = "Name can't exceed 50 characters")
     private String name;
 
