@@ -49,22 +49,38 @@ public class ProductController {
         return ResponseEntity.ok().body(productService.findById(id));
     }
 
+    @Operation(
+            summary = "Add one or more new products",
+            description = "Add new products to the database"
+    )
     @PostMapping
     public List<ProductDto> createProducts(@RequestBody @Valid List<ProductDto> products) {
         return productService.insertData(products);
     }
 
+    @Operation(
+            summary = "Update one or more products",
+            description = "Update one or more products from the database"
+    )
     @PutMapping
     public List<ProductDto> updateOrders(@RequestBody @Valid List<ProductDto> products) {
         return productService.updateData(products);
     }
 
+    @Operation(
+            summary = "Delete a product by ID",
+            description = "Deletes a product from the database using its unique identifier."
+    )
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
         productService.deleteData(id);
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(
+            summary = "Get all orders for a product by product ID",
+            description = "Fetches all orders associated with a specific product using its unique identifier."
+    )
     @GetMapping("/{id}/orders")
     public ResponseEntity<ProductWithOrdersDto> getProductWithOrders(@PathVariable Long id) {
         return ResponseEntity.ok(productService.getProductWithOrders(id));

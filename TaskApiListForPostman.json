@@ -1,0 +1,281 @@
+{
+  "info": {
+    "name": "Task",
+    "description": "",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "AddOrder",
+      "event": [],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:8080/api/orders",
+          "protocol": "http",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "orders"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "[\n  {\n    \"id\": 1,\n    \"quantity\": 1,\n    \"orderDate\": \"2024-06-10T12:00:00\",\n    \"productId\": 1\n  },\n  {\n    \"quantity\": 1,\n    \"orderDate\": \"2024-06-11T15:30:00\",\n    \"productId\": 2\n  }\n]",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "AddProduct",
+      "event": [],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:8080/api/products",
+          "protocol": "http",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "products"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "[\n  {\n    \"name\": \"Iphone 2\",\n    \"price\": 1200.0,\n    \"stock\": 120\n  }\n]",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "DeleteOrderByID",
+      "event": [],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:8080/api/orders/2",
+          "protocol": "http",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "orders",
+            "2"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "GetOrderByID",
+      "event": [],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:8080/api/orders/1",
+          "protocol": "http",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "orders",
+            "1"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "GetOrderPageable",
+      "event": [],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:8080/api/orders?direction=asc&sortBy=quantity&quantityMax=100",
+          "protocol": "http",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "orders"
+          ],
+          "query": [
+            {
+              "key": "direction",
+              "value": "asc"
+            },
+            {
+              "key": "sortBy",
+              "value": "quantity"
+            },
+            {
+              "key": "quantityMax",
+              "value": "100"
+            }
+          ],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "GetProductByID",
+      "event": [],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:8080/api/products/1",
+          "protocol": "http",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "products",
+            "1"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "GetProductWithOrdersByID",
+      "event": [],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:8080/api/products/2/orders",
+          "protocol": "http",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "products",
+            "2",
+            "orders"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "UpdateOrder",
+      "event": [],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:8080/api/orders",
+          "protocol": "http",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "orders"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "[\n  {\n    \"id\": 1,\n    \"quantity\": 7128,\n    \"orderDate\": \"2024-06-10T12:00:00\",\n    \"productId\": 2\n  },\n  {\n    \"id\": 2,\n    \"quantity\": 1,\n    \"orderDate\": \"2024-06-11T15:30:00\",\n    \"productId\": 2\n  }\n]",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Health API",
+      "event": [],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:8080/api/products/1",
+          "protocol": "http",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "api",
+            "products",
+            "1"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    }
+  ],
+  "variable": []
+}

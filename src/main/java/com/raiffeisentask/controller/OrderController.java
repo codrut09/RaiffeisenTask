@@ -4,6 +4,7 @@ import com.raiffeisentask.dto.OrderDto;
 import com.raiffeisentask.model.Order;
 import com.raiffeisentask.service.order.OrderService;
 import com.raiffeisentask.util.OrderSpecificationBuilder;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,27 +37,47 @@ public class OrderController {
 
     private final OrderService orderService;
 
+    @Operation(
+            summary = "Get an order by ID",
+            description = "Fetches an order from the database using its unique identifier."
+    )
     @GetMapping("/{id}")
     public OrderDto getOrderById(@PathVariable Long id) {
         return orderService.findById(id);
     }
 
+    @Operation(
+            summary = "Add one or more new orders",
+            description = "Add new orders to the database"
+    )
     @PostMapping
     public List<OrderDto> createOrders(@RequestBody @Valid List<OrderDto> orders) {
         return orderService.insertData(orders);
     }
 
+    @Operation(
+            summary = "Update one or more existing orders",
+            description = "Update existing orders in the database"
+    )
     @PutMapping
     public List<OrderDto> updateOrders(@RequestBody @Valid List<OrderDto> orders) {
         return orderService.updateData(orders);
     }
 
+    @Operation(
+            summary = "Delete an order by ID",
+            description = "Deletes an order from the database using its unique identifier."
+    )
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
         orderService.deleteData(id);
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(
+            summary = "Get all orders",
+            description = "Fetches all orders from the database with optional filtering and pagination."
+    )
     @GetMapping
     public Page<OrderDto> getOrders(@RequestParam(defaultValue = "0") int page,
                                     @RequestParam(defaultValue = "10") int size,
