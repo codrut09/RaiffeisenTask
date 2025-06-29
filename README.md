@@ -46,6 +46,17 @@ mvn clean package -DskipTests
 ```
 docker-compose up -d
 ```
+3. If you encounter any issues with the database connection, ensure that the PostgreSQL service is running and accessible, and then restart the application container.
+4. If there is a problem which persiste, please run the fallowing command to rebuild the application:
+```
+docker-compose down -v --rmi all
+mvn clean package -DskipTests
+docker-compose up --build
+```
+5. Or you can do it all in one line:
+```
+docker-compose down -v --rmi all && mvn clean package -DskipTests && docker-compose up --build
+```
 
 ## API Documentation
 Access the Swagger UI documentation at: http://localhost:8080/swagger-ui.html

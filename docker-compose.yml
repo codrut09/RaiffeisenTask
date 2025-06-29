@@ -14,6 +14,11 @@ services:
       - pgdata:/var/lib/postgresql/data
     networks:
       - app-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U myuser -d mydb" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   app:
     build:
@@ -21,7 +26,8 @@ services:
       dockerfile: Dockerfile
     container_name: raiffeisen_application_container
     depends_on:
-      - postgres
+       postgres:
+         condition: service_healthy
     ports:
       - "8080:8080"
     environment:
